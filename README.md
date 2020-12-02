@@ -31,17 +31,22 @@ The Swift for TensorFlow project is currently focusing on 2 kinds of users:
 ### Using Swift for TensorFlow
 
 - **Google Colaboratory**: The fastest way to get started is to try out Swift
-   for TensorFlow right in your browser. Just open up [a tutorial](#tutorials-), or start from a [blank
-   notebook](https://colab.research.google.com/github/tensorflow/swift/blob/master/notebooks/blank_swift.ipynb)!
+   for TensorFlow right in your browser. Just open up [a tutorial](#tutorials-),
+   or start from a [blank notebook][blank_notebook]!
    Read more in our [usage guide](Usage.md).
 
-- **Install locally**: you can [download a pre-built Swift for TensorFlow
+- **Install locally**: You can [download a pre-built Swift for TensorFlow
    package](Installation.md). After installation, you can follow these
    [step-by-step instructions](Usage.md) to build and execute a Swift script on
    your computer.
 
+- **Run on GCP**: You can spin up a GCE instance using a Swift for TensorFlow
+  [Deep Learning VM][dlvm] image, with all drivers and the toolchain
+  pre-installed. Instructions can be found in the
+  [Installation Guide](Installation.md).
+
 - **Compile from source**: If you'd like to customize Swift for TensorFlow or
-   contribute back, follow our [instructions](https://github.com/apple/swift/tree/tensorflow#building-swift-for-tensorflow)
+   contribute back, follow our [instructions][instructions]
    on building Swift for TensorFlow from source.
 
 ### Tutorials ![](https://www.tensorflow.org/images/colab_logo_32px.png)
@@ -52,16 +57,19 @@ Tutorial | Last Updated |
 [Protocol-Oriented Programming & Generics](https://colab.research.google.com/github/tensorflow/swift/blob/master/docs/site/tutorials/protocol_oriented_generics.ipynb) | August 2019
 [Python Interoperability](https://colab.research.google.com/github/tensorflow/swift/blob/master/docs/site/tutorials/python_interoperability.ipynb) | March 2019
 [Custom Differentiation](https://colab.research.google.com/github/tensorflow/swift/blob/master/docs/site/tutorials/custom_differentiation.ipynb) | March 2019
+[Sharp Edges in Differentiability](https://colab.research.google.com/github/tensorflow/swift/blob/master/docs/site/tutorials/Swift_autodiff_sharp_edges.ipynb) | November 2020
 [Model Training Walkthrough](https://colab.research.google.com/github/tensorflow/swift/blob/master/docs/site/tutorials/model_training_walkthrough.ipynb) | March 2019
 [Raw TensorFlow Operators](https://colab.research.google.com/github/tensorflow/swift/blob/master/docs/site/tutorials/raw_tensorflow_operators.ipynb) | December 2019
+[Introducing X10, an XLA-Based Backend](https://colab.research.google.com/github/tensorflow/swift/blob/master/docs/site/tutorials/introducing_x10.ipynb) | May 2020
 
 ### Resources
 
 - [Models and Examples](https://github.com/tensorflow/swift-models)
-- [TensorFlow Swift API Reference](https://www.tensorflow.org/api_docs/swift/Structs/Tensor)
+- [TensorFlow Swift API Reference](https://www.tensorflow.org/swift/api_docs/Structs/Tensor)
 - [Release Notes](RELEASES.md)
 - [Known Issues](KNOWN_ISSUES.md)
 - [Frequently Asked Questions](FAQ.md)
+- [TensorFlow Blog Posts](https://blog.tensorflow.org/search?label=Swift)
 
 ### Forums
 
@@ -98,9 +106,10 @@ struct Model: Differentiable {
     }
 }
 
-// Differentiate using `Differentiable.gradient(at:in:)`.
-let model = Model(w: 4.0, b: 3.0)
-let (𝛁model, 𝛁input) = model.gradient(at: 2.0) { model, input in
+// Differentiate using `gradient(at:_:in:)`.
+let model = Model(w: 4, b: 3)
+let input: Float = 2
+let (𝛁model, 𝛁input) = gradient(at: model, input) { model, input in
     model.applied(to: input)
 }
 
@@ -141,6 +150,7 @@ Document | Last Updated | Status |
 -------- | ------------ | ------ |
 [Why *Swift* for TensorFlow?](docs/WhySwiftForTensorFlow.md) | April 2018 | Current
 [Swift for TensorFlow Design Overview](docs/DesignOverview.md) | April 2018 | Outdated
+[Supported Backends](docs/SupportedBackends.md) | May 2020 | Current
 
 ### Technology deep dive
 
@@ -150,9 +160,9 @@ out the following documentation.
 
 Document | Last Updated | Status |
 -------- | ------------ | ------ |
-[Differentiable Programming Mega-Proposal](https://github.com/apple/swift/blob/master/docs/DifferentiableProgramming.md) | September 2019 | Current
-[Swift Differentiable Programming Design Overview](https://docs.google.com/document/d/1bPepWLfRQa6CtXqKA8CDQ87uZHixNav-TFjLSisuKag/edit?usp=sharing) | June 2019 | Current
+[Swift Differentiable Programming Manifesto](https://github.com/apple/swift/blob/master/docs/DifferentiableProgramming.md) | January 2020 | Current
 [Swift Differentiable Programming Implementation Overview](https://docs.google.com/document/d/1_BirmTqdotglwNTOcYAW-ib6mx_jl-gH9Dbg4WmHZh0) | August 2019 | Current
+[Swift Differentiable Programming Design Overview](https://docs.google.com/document/d/1bPepWLfRQa6CtXqKA8CDQ87uZHixNav-TFjLSisuKag/edit?usp=sharing) | June 2019 | Outdated
 [Differentiable Types](docs/DifferentiableTypes.md) | March 2019 | Outdated
 [Differentiable Functions and Differentiation APIs](docs/DifferentiableFunctions.md) | March 2019 | Outdated
 [Dynamic Property Iteration using Key Paths](docs/DynamicPropertyIteration.md) | March 2019 | Current
@@ -183,6 +193,20 @@ Additional code repositories that make up the core of the project include:
 
 [Jupyter Notebook](http://jupyter.org/) support for Swift is under development at
 [google/swift-jupyter](https://github.com/google/swift-jupyter).
+
+### Model garden
+
+[tensorflow/swift-models](https://github.com/tensorflow/swift-models) is a
+repository of machine learning models built with Swift for TensorFlow. It
+intended to provide examples of how to use Swift for TensorFlow, to allow for
+end-to-end tests of machine learning APIs, and to host model benchmarking
+infrastructure.
+
+### SwiftAI
+
+[fastai/swiftai](https://github.com/fastai/swiftai) is a high-level API for
+Swift for TensorFlow, modeled after the
+[fastai Python library](https://github.com/fastai/fastai).
 
 ## Community
 
@@ -218,3 +242,7 @@ race, religion, or sexual identity and orientation.
 The Swift for TensorFlow community is guided by our [Code of
 Conduct](CODE_OF_CONDUCT.md), which we encourage everybody to read before
 participating.
+
+[blank_notebook]: https://colab.research.google.com/notebook#create=true&language=swift
+[dlvm]: https://cloud.google.com/ai-platform/deep-learning-vm/docs
+[instructions]: https://github.com/apple/swift/tree/tensorflow#building-swift-for-tensorflow
